@@ -1,16 +1,18 @@
 import "./App.css";
 
+const STATUSES = {
+  TODO: "TODO",
+  IN_PROGRESS: "IN_PROGRESS",
+  DONE: "DONE",
+};
+
+const todos = [
+  { id: 0, title: "朝ごはん", status: STATUSES.DONE },
+  { id: 1, title: "昼ごはん", status: STATUSES.IN_PROGRESS },
+  { id: 2, title: "夜ごはん", status: STATUSES.TODO },
+];
+
 function App() {
-  const STATUSES = {
-    TODO: "TODO",
-    IN_PROGRESS: "IN_PROGRESS",
-    DONE: "DONE",
-  };
-  const todos = [
-    { id: 0, title: "朝ごはん", status: STATUSES.DONE },
-    { id: 1, title: "昼ごはん", status: STATUSES.IN_PROGRESS },
-    { id: 2, title: "夜ごはん", status: STATUSES.TODO },
-  ];
   return (
     <div className="App">
       <h1>TODOリスト</h1>
