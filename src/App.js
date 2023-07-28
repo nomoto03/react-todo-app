@@ -55,6 +55,13 @@ function App() {
       payload: { id: latestTodoId, title: newTask },
     });
     setLatestTodoId(latestTodoId + 1);
+    setNewTask("");
+  };
+  const handleCompleteTodo = (currentTodoId) => {
+    dispatchTodos({
+      type: "delete",
+      payload: { id: currentTodoId },
+    });
   };
   return (
     <div className="App">
@@ -65,7 +72,7 @@ function App() {
         setNewTask={setNewTask}
         handleAddTodo={handleAddTodo}
       />
-      <TaskList todos={todos} />
+      <TaskList todos={todos} handleCompleteTodo={handleCompleteTodo} />
     </div>
   );
 }

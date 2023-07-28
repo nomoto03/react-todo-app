@@ -1,6 +1,6 @@
 import React from "react";
 
-const TaskList = ({ todos }) => {
+const TaskList = ({ todos, handleCompleteTodo }) => {
   return (
     <div>
       <h2>タスク一覧</h2>
@@ -8,7 +8,7 @@ const TaskList = ({ todos }) => {
         {todos.map((todo) => (
           <li key={todo.id}>
             {todo.title}
-            <button>完了</button>
+            <button onClick={() => handleCompleteTodo(todo.id)}>完了</button>
           </li>
         ))}
       </ul>
