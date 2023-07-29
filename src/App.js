@@ -2,6 +2,7 @@ import { useState, useReducer } from "react";
 import "./App.css";
 import NewTaskForm from "./components/NewTaskForm";
 import TaskList from "./components/TaskList";
+import TaskEditForm from "./components/TaskEditForm";
 
 const STATUSES = {
   TODO: "TODO",
@@ -21,17 +22,14 @@ const todosReducer = (state, action) => {
         },
       ];
     case "update":
-      const newTodos = [...state];
-      newTodos.map((todo) =>
+      return [...state].map((todo) =>
         todo.id === action.payload.id
           ? {
               id: action.payload.id,
               title: action.payload.title,
-              status: action.payload.status,
             }
           : todo
       );
-      return [...state];
     case "delete":
       return [...state].filter((todo) => todo.id !== action.payload.id);
     default:
@@ -45,7 +43,9 @@ function App() {
     { id: 1, title: "昼ごはん", status: STATUSES.IN_PROGRESS },
     { id: 2, title: "夜ごはん", status: STATUSES.TODO },
   ];
+  const [isEditing, setIsEditing] = useState(false);
   const [latestTodoId, setLatestTodoId] = useState(initialTodos.length);
+  const [editId, setEditId] = useState(0);
   const [newTask, setNewTask] = useState("");
   const [todos, dispatchTodos] = useReducer(todosReducer, initialTodos);
   // ↓ここで定義するのか？
@@ -57,6 +57,24 @@ function App() {
     setLatestTodoId(latestTodoId + 1);
     setNewTask("");
   };
+  const handleEditTodo = (currentTodoId) => {
+    dispatchTodos({
+      type: "update",
+      // TODO: statusの編集
+      payload: { id: currentTodoId, title: newTask },
+    });
+    setIsEditing(false);
+    setNewTask("");
+  };
+  const handleEditTaskFormClose = () => {
+    setIsEditing(false);
+    setNewTask("");
+  };
+  const handleEditTaskFormOpen = (id, title) => {
+    setIsEditing(true);
+    setEditId(id);
+    setNewTask(title);
+  };
   const handleCompleteTodo = (currentTodoId) => {
     dispatchTodos({
       type: "delete",
@@ -67,12 +85,26 @@ function App() {
     <div className="App">
       <h1>TODOリスト</h1>
       {/* ↓compornentに渡すpropsはこれで良い？ */}
-      <NewTaskForm
-        newTask={newTask}
-        setNewTask={setNewTask}
-        handleAddTodo={handleAddTodo}
+      {isEditing ? (
+        <TaskEditForm
+          editId={editId}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          handleEditTodo={handleEditTodo}
+          handleEditTaskFormClose={handleEditTaskFormClose}
+        />
+      ) : (
+        <NewTaskForm
+          newTask={newTask}
+          setNewTask={setNewTask}
+          handleAddTodo={handleAddTodo}
+        />
+      )}
+      <TaskList
+        todos={todos}
+        handleEditTaskFormOpen={handleEditTaskFormOpen}
+        handleCompleteTodo={handleCompleteTodo}
       />
-      <TaskList todos={todos} handleCompleteTodo={handleCompleteTodo} />
     </div>
   );
 }
