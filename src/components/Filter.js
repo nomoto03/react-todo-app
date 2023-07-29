@@ -1,7 +1,7 @@
 import React from 'react'
 import { STATUSES } from '../App'
 
-const Filter = () => {
+const Filter = ({ setFilter }) => {
   const filterOptions = [
     { value: "all", label: "すべて"},
     { value: STATUSES.TODO, label: "未着手"},
@@ -9,7 +9,7 @@ const Filter = () => {
     { value: STATUSES.DONE, label: "完了"},
   ]
   return (
-    <select>
+    <select onChange={(e) => setFilter(e.target.value)}>
       {filterOptions.map((option) => 
         <option key={option.value} value={option.value}>{option.label}</option>
       )}

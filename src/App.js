@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useState, useReducer, useEffect } from "react";
 import "./App.css";
 import NewTaskForm from "./components/NewTaskForm";
 import TaskList from "./components/TaskList";
@@ -22,12 +22,21 @@ const todosReducer = (state, action) => {
           status: STATUSES.TODO,
         },
       ];
-    case "update":
+    case "updateTitle":
       return [...state].map((todo) =>
         todo.id === action.payload.id
           ? {
-              id: action.payload.id,
+              ...todo,
               title: action.payload.title,
+            }
+          : todo
+      );
+    case "updateStatus":
+      return [...state].map((todo) =>
+        todo.id === action.payload.id
+          ? {
+              ...todo,
+              status: action.payload.status,
             }
           : todo
       );
@@ -46,9 +55,11 @@ function App() {
   ];
   const [isEditing, setIsEditing] = useState(false);
   const [latestTodoId, setLatestTodoId] = useState(initialTodos.length);
-  const [editId, setEditId] = useState(0);
+  const [editId, setEditId] = useState(null);
   const [newTask, setNewTask] = useState("");
   const [todos, dispatchTodos] = useReducer(todosReducer, initialTodos);
+  const [filter, setFilter] = useState("all");
+  const [filteredTodos, setFilteredTodos] = useState(todos);
   // ↓ここで定義するのか？
   const handleAddTodo = () => {
     dispatchTodos({
@@ -60,15 +71,11 @@ function App() {
   };
   const handleEditTodo = (currentTodoId) => {
     dispatchTodos({
-      type: "update",
-      // TODO: statusの編集
+      type: "updateTitle",
       payload: { id: currentTodoId, title: newTask },
     });
     setIsEditing(false);
-    setNewTask("");
-  };
-  const handleEditTaskFormClose = () => {
-    setIsEditing(false);
+    setEditId(null);
     setNewTask("");
   };
   const handleEditTaskFormOpen = (id, title) => {
@@ -76,16 +83,36 @@ function App() {
     setEditId(id);
     setNewTask(title);
   };
+  const handleEditTaskFormClose = () => {
+    setIsEditing(false);
+    setNewTask("");
+  };
+  const handleStatusChange = (currentTodoId, e) => {
+    dispatchTodos({
+      type: "updateStatus",
+      payload: { id: currentTodoId, status: e.target.value },
+    });
+  };
   const handleCompleteTodo = (currentTodoId) => {
     dispatchTodos({
       type: "delete",
       payload: { id: currentTodoId },
     });
   };
+  useEffect(() => {
+    const handleFilterChange = () => {
+      const newFilteredTodos =
+        filter === "all"
+          ? [...todos]
+          : [...todos].filter((todo) => todo.status === filter);
+      setFilteredTodos(newFilteredTodos);
+    };
+    handleFilterChange();
+  }, [filter, todos]);
+
   return (
     <div className="App">
       <h1>TODOリスト</h1>
-      {/* ↓compornentに渡すpropsはこれで良い？ */}
       {isEditing ? (
         <TaskEditForm
           editId={editId}
@@ -102,11 +129,12 @@ function App() {
         />
       )}
       <TaskList
-        todos={todos}
+        todos={filteredTodos}
         handleEditTaskFormOpen={handleEditTaskFormOpen}
+        handleStatusChange={handleStatusChange}
         handleCompleteTodo={handleCompleteTodo}
       >
-        <Filter />
+        <Filter setFilter={setFilter} />
       </TaskList>
     </div>
   );
