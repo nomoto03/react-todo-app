@@ -1,9 +1,10 @@
 import React from "react";
 
-const TaskList = ({ todos, handleEditTaskFormOpen, handleCompleteTodo }) => {
+const TaskList = ({ todos, handleEditTaskFormOpen, handleCompleteTodo, children }) => {
   return (
     <div>
       <h2>タスク一覧</h2>
+      { children }
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>

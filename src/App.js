@@ -3,8 +3,9 @@ import "./App.css";
 import NewTaskForm from "./components/NewTaskForm";
 import TaskList from "./components/TaskList";
 import TaskEditForm from "./components/TaskEditForm";
+import Filter from "./components/Filter";
 
-const STATUSES = {
+export const STATUSES = {
   TODO: "TODO",
   IN_PROGRESS: "IN_PROGRESS",
   DONE: "DONE",
@@ -104,7 +105,9 @@ function App() {
         todos={todos}
         handleEditTaskFormOpen={handleEditTaskFormOpen}
         handleCompleteTodo={handleCompleteTodo}
-      />
+      >
+        <Filter />
+      </TaskList>
     </div>
   );
 }
